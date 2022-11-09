@@ -1,8 +1,8 @@
 {
-  "name": "ecomerce_serverless",
+  "name": "ecomerce_aws",
   "version": "0.1.0",
   "bin": {
-    "ecomerce_serverless": "bin/ecomerce_serverless.js"
+    "ecomerce_aws": "bin/ecomerce_aws.js"
   },
   "scripts": {
     "build": "tsc",
