@@ -1,8 +1,8 @@
 {
-  "name": "ecomerce_aws",
+  "name": "ecommerce_aws",
   "version": "0.1.0",
   "bin": {
-    "ecomerce_aws": "bin/ecomerce_aws.js"
+    "ecommerce_aws": "bin/ecommerce_aws.js"
   },
   "scripts": {
     "build": "tsc",
