@@ -16,6 +16,7 @@ export class ECommerceApiStack extends cdk.Stack {
     const logGroup = new cwlogs.LogGroup(this, "ECommerceApiLogs")
     const api = new apiGateway.RestApi(this, 'ECommerceApi', {
       restApiName: 'ECommerceApi',
+      cloudWatchRole: true,
       deployOptions: {
         accessLogDestination: new apiGateway.LogGroupLogDestination(logGroup),
         accessLogFormat: apiGateway.AccessLogFormat.jsonWithStandardFields({
@@ -27,15 +28,16 @@ export class ECommerceApiStack extends cdk.Stack {
           httpMethod: true,
           requestTime: true, 
           resourcePath: true, 
-          responseLength: true, 
+          responseLength: true,
         })
       }
     })
 
+    // Criando a integração para o método
     const productsFetchIntegration = new apiGateway.LambdaIntegration(props.productsFetchHandler);
   
     // "/products"
-
+    // REST ROUTES 
     const productsResource = api.root.addResource("products")
     productsResource.addMethod("GET", productsFetchIntegration)
 
