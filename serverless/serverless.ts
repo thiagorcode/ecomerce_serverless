@@ -29,7 +29,7 @@ const serverlessConfiguration: AWS = {
   // import the function via paths
   functions: {
     productsAdmin: {
-      handler: "src/functions/productsAdminFunction.handler",
+      handler: "src/functions/products/productsAdminFunction.handler",
       events: [
         {
           http: {
@@ -41,7 +41,7 @@ const serverlessConfiguration: AWS = {
       ]
     },
     productFetch: {
-      handler: "src/functions/productsFetchFunction.handler",
+      handler: "src/functions/products/productsFetchFunction.handler",
       events: [
         {
           http: {
