@@ -1,55 +1,49 @@
-import * as lambda from "aws-cdk-lib/aws-lambda"
-import * as cdk from 'aws-cdk-lib'
+import * as cdk from "aws-cdk-lib"
 import * as lambdaNodeJS from "aws-cdk-lib/aws-lambda-nodejs"
-import * as apiGateway from 'aws-cdk-lib/aws-apigateway'
-import * as cwlogs from 'aws-cdk-lib/aws-logs'
+import * as apigateway from "aws-cdk-lib/aws-apigateway"
+import * as cwlogs from "aws-cdk-lib/aws-logs"
 import { Construct } from "constructs"
 
 interface ECommerceApiStackProps extends cdk.StackProps {
-  productsFetchHandler: lambdaNodeJS.NodejsFunction
-  productsAdminHandler: lambdaNodeJS.NodejsFunction
+   productsFetchHandler: lambdaNodeJS.NodejsFunction
+   productsAdminHandler: lambdaNodeJS.NodejsFunction
 }
 
 export class ECommerceApiStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: ECommerceApiStackProps) {
-    super(scope, id, props)
 
-    const logGroup = new cwlogs.LogGroup(this, "ECommerceApiLogs")
-    const api = new apiGateway.RestApi(this, 'ECommerceApi', {
-      restApiName: 'ECommerceApi',
-      cloudWatchRole: true,
-      deployOptions: {
-        accessLogDestination: new apiGateway.LogGroupLogDestination(logGroup),
-        accessLogFormat: apiGateway.AccessLogFormat.jsonWithStandardFields({
-          ip: true, 
-          user: true,
-          caller: true,
-          status: true,
-          protocol: true, 
-          httpMethod: true,
-          requestTime: true, 
-          resourcePath: true, 
-          responseLength: true,
-        })
-      }
-    })
+   constructor(scope: Construct, id: string, props: ECommerceApiStackProps) {
+      super(scope, id, props)
 
-    // Criando a integração para o método
-    // Produto
-    const productsFetchIntegration = new apiGateway.LambdaIntegration(props.productsFetchHandler);
-  
-    // REST ROUTES 
-    // "/products"
-    const productsResource = api.root.addResource("products")
-    productsResource.addMethod("GET", productsFetchIntegration)
+      const logGroup = new cwlogs.LogGroup(this, "ECommerceApiLogs")
+      const api = new apigateway.RestApi(this, "ECommerceApi", {
+         restApiName: "ECommerceApi",
+         deployOptions: {
+            accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+            accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
+               httpMethod: true,
+               ip: true,
+               protocol: true,
+               requestTime: true,
+               resourcePath: true,
+               responseLength: true,
+               status: true,
+               caller: true,
+               user: true
+            })
+         }
+      })
 
+      const productsFetchIntegration = new apigateway.LambdaIntegration(props.productsFetchHandler)
 
-    // GET  /products/{id}
-    const productIdResource = productsResource.addResource('{id}')
-    productIdResource.addMethod("GET", productsFetchIntegration)
+      // "/products"
+      const productsResource = api.root.addResource("products")
+      productsResource.addMethod("GET", productsFetchIntegration)
 
-    // Admin de Produto
-    const productsAdminIntegration = new apiGateway.LambdaIntegration(props.productsAdminHandler)
+      // GET /products/{id}
+      const productIdResource = productsResource.addResource("{id}")
+      productIdResource.addMethod("GET", productsFetchIntegration)
+
+      const productsAdminIntegration = new apigateway.LambdaIntegration(props.productsAdminHandler)
 
       // POST /products
       productsResource.addMethod("POST", productsAdminIntegration)
@@ -59,6 +53,5 @@ export class ECommerceApiStack extends cdk.Stack {
 
       // DELETE /products/{id}
       productIdResource.addMethod("DELETE", productsAdminIntegration)
-
-  }
+   }
 }
